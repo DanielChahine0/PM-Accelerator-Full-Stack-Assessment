@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import Response
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.routers import weather, integrations, export
@@ -40,6 +41,11 @@ def root():
         "docs": "/docs",
         "version": "1.0.0",
     }
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon():
+    return Response(status_code=204)
 
 
 @app.get("/health", tags=["root"])
