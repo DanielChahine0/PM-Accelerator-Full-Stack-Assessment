@@ -6,7 +6,6 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql://postgres:password@localhost:5432/weather_db"
     OPENWEATHER_API_KEY: str = ""
     YOUTUBE_API_KEY: str = ""
-    GOOGLE_MAPS_API_KEY: str = ""
     CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000"
 
     @property

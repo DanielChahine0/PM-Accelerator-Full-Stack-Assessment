@@ -1,11 +1,11 @@
 """
 Additional API integrations:
 - YouTube Data API v3 (location videos)
-- Google Maps Embed (static map URL builder)
+- OpenStreetMap embed (map — no API key required)
 - Air Quality (Open-Meteo AQI - free)
 """
 import requests
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from app.core.config import settings
 
 
@@ -53,24 +53,11 @@ def get_youtube_videos(location_name: str, max_results: int = 4) -> List[Dict[st
 
 
 # ---------------------------------------------------------------------------
-# Google Maps
+# OpenStreetMap (no API key required)
 # ---------------------------------------------------------------------------
 
-def get_google_maps_embed_url(latitude: float, longitude: float, zoom: int = 12) -> Optional[str]:
-    """Build a Google Maps Embed API URL (requires API key with Maps Embed enabled)."""
-    if not settings.GOOGLE_MAPS_API_KEY:
-        return None
-    return (
-        f"https://www.google.com/maps/embed/v1/view"
-        f"?key={settings.GOOGLE_MAPS_API_KEY}"
-        f"&center={latitude},{longitude}"
-        f"&zoom={zoom}"
-        f"&maptype=roadmap"
-    )
-
-
-def get_openstreetmap_url(latitude: float, longitude: float) -> str:
-    """Fallback map embed using OpenStreetMap (no key required)."""
+def get_openstreetmap_embed_url(latitude: float, longitude: float) -> str:
+    """Build an OpenStreetMap embed URL — no API key required."""
     return (
         f"https://www.openstreetmap.org/export/embed.html"
         f"?bbox={longitude - 0.1},{latitude - 0.1},{longitude + 0.1},{latitude + 0.1}"
