@@ -22,7 +22,7 @@ def get_current_weather(geo: GeocodingResult) -> CurrentWeatherResponse:
         "appid": settings.OPENWEATHER_API_KEY,
         "units": "metric",
     }
-    resp = requests.get(f"{OWM_BASE}/weather", params=params, timeout=10)
+    resp = requests.get(f"{OWM_BASE}/weather", params=params, timeout=8)
     _handle_owm_error(resp)
     d = resp.json()
     return CurrentWeatherResponse(
@@ -51,7 +51,7 @@ def get_forecast(geo: GeocodingResult) -> ForecastResponse:
         "units": "metric",
         "cnt": 40,  # 5 days × 8 readings
     }
-    resp = requests.get(f"{OWM_BASE}/forecast", params=params, timeout=10)
+    resp = requests.get(f"{OWM_BASE}/forecast", params=params, timeout=8)
     _handle_owm_error(resp)
     data = resp.json()
 
@@ -117,7 +117,7 @@ def get_historical_weather(geo: GeocodingResult, date_from: date, date_to: date)
         ],
         "timezone": "auto",
     }
-    resp = requests.get(f"{OPEN_METEO_BASE}/archive", params=params, timeout=15)
+    resp = requests.get(f"{OPEN_METEO_BASE}/archive", params=params, timeout=10)
     if resp.status_code != 200:
         raise ValueError(f"Historical weather unavailable: {resp.text}")
     return resp.json()

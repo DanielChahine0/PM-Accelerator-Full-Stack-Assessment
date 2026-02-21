@@ -31,7 +31,7 @@ def get_youtube_videos(location_name: str, max_results: int = 4) -> List[Dict[st
         resp = requests.get(
             "https://www.googleapis.com/youtube/v3/search",
             params=params,
-            timeout=10,
+            timeout=8,
         )
         resp.raise_for_status()
         items = resp.json().get("items", [])
@@ -82,7 +82,7 @@ def get_air_quality(latitude: float, longitude: float) -> Dict[str, Any]:
         resp = requests.get(
             "https://air-quality-api.open-meteo.com/v1/air-quality",
             params=params,
-            timeout=10,
+            timeout=8,
         )
         if resp.status_code == 200:
             data = resp.json()
