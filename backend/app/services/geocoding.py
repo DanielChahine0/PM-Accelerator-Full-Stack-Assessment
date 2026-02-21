@@ -5,10 +5,13 @@ Resolves city names, zip codes, landmarks, GPS coordinates, etc.
 import requests
 from typing import Optional
 from app.schemas.weather import GeocodingResult
+import os
 
 NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
 NOMINATIM_REVERSE_URL = "https://nominatim.openstreetmap.org/reverse"
-HEADERS = {"User-Agent": "WeatherApp/1.0 (PM Accelerator Assessment)"}
+DEFAULT_USER_AGENT = "WeatherApp/1.0 (contact: nominatim-contact@example.com)"
+USER_AGENT = os.getenv("NOMINATIM_USER_AGENT", DEFAULT_USER_AGENT)
+HEADERS = {"User-Agent": USER_AGENT}
 
 
 def geocode_location(query: str) -> GeocodingResult:
