@@ -65,31 +65,31 @@
 PM-Accelerator-Full-Stack-Assessment/
 ├── backend/
 │   ├── app/
-│   │   ├── core/config.py        # Settings from .env
-│   │   ├── database.py           # SQLAlchemy engine + session
-│   │   ├── main.py               # FastAPI app + CORS
-│   │   ├── models/weather.py     # SQLAlchemy models
-│   │   ├── schemas/weather.py    # Pydantic schemas
+│   │   ├── core/config.py        
+│   │   ├── database.py           
+│   │   ├── main.py               
+│   │   ├── models/weather.py     
+│   │   ├── schemas/weather.py    
 │   │   ├── routers/
-│   │   │   ├── weather.py        # CRUD + live weather endpoints
-│   │   │   ├── integrations.py   # YouTube, Maps, AQI
-│   │   │   └── export.py         # Data export endpoint
+│   │   │   ├── weather.py        
+│   │   │   ├── integrations.py   
+│   │   │   └── export.py         
 │   │   └── services/
-│   │       ├── geocoding.py      # Nominatim geocoding
-│   │       ├── weather_api.py    # OpenWeatherMap + Open-Meteo
-│   │       ├── integrations.py   # YouTube + Maps + AQI
-│   │       └── export.py         # JSON/CSV/XML/PDF/MD export
-│   ├── alembic/                  # Database migrations
+│   │       ├── geocoding.py      
+│   │       ├── weather_api.py    
+│   │       ├── integrations.py   
+│   │       └── export.py         
+│   ├── alembic/                  
 │   ├── alembic.ini
 │   ├── requirements.txt
-│   ├── .env                      # Your API keys (git-ignored)
+│   ├── .env                      
 │   └── .env.example
 └── frontend/
     ├── src/
-    │   ├── components/           # Reusable UI components
-    │   ├── pages/                # Home, History, About
-    │   ├── services/api.js       # Axios API client
-    │   └── index.css             # Global responsive styles
+    │   ├── components/           
+    │   ├── pages/                
+    │   ├── services/api.js       
+    │   └── index.css             
     ├── .env
     ├── .env.example
     └── package.json
