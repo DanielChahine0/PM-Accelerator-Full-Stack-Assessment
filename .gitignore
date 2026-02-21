@@ -1,0 +1,68 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+
+# Claude / AI
+.claude/
+
+# Python virtual environments
+venv/
+.venv/
+env/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Testing / Coverage
+coverage/
+.coverage
+htmlcov/
+.pytest_cache/
+.nyc_output/
+
+# Build outputs
+frontend/dist/
+frontend/build/
+*.js.map
+
+# Database
+*.db
+*.sqlite3
+
+# Alembic
+alembic/versions/__pycache__/
+
+# Misc
+*.bak
+*.tmp
+*.temp
+.cache/
