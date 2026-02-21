@@ -6,6 +6,7 @@ import AirQualityBadge from "../components/AirQualityBadge";
 import MapEmbed from "../components/MapEmbed";
 import YouTubeVideos from "../components/YouTubeVideos";
 import SaveWeatherForm from "../components/SaveWeatherForm";
+import StandardCard from "../components/StandardCard";
 import { getCurrentWeather, getForecast, getAirQuality, getMapData, getYouTubeVideos } from "../services/api";
 import toast from "react-hot-toast";
 
@@ -30,7 +31,6 @@ export default function Home() {
     setVideos(null);
 
     try {
-      // Primary: current weather (required)
       const [w, f] = await Promise.all([
         getCurrentWeather(location),
         getForecast(location).catch(() => null),
@@ -38,7 +38,6 @@ export default function Home() {
       setWeather(w);
       setForecast(f);
 
-      // Secondary: enrichment data (non-blocking)
       Promise.all([
         getAirQuality(location).catch(() => null),
         getMapData(location).catch(() => null),
@@ -60,19 +59,25 @@ export default function Home() {
   return (
     <main className="page">
       <div className="container">
-        {/* Hero search */}
-        <div className="card mb-3" style={{ textAlign: "center", padding: "2rem 1.5rem" }}>
-          <h1 style={{ marginBottom: "0.5rem" }}>Weather App</h1>
-          <p className="text-muted mb-2">
-            Enter any city, zip code, landmark, or GPS coordinates to get real-time weather.
+        {/* Search section — plain, no card wrapper */}
+        <section className="search-section mb-3">
+          <h1 className="search-section__title">Weather</h1>
+          <p className="search-section__hint">
+            City, zip code, landmark, or GPS coordinates.
           </p>
           <SearchBar onSearch={handleSearch} loading={loading} />
-        </div>
+        </section>
 
-        {/* Loading */}
+        {/* Loading skeletons */}
         {loading && (
-          <div className="loading-center">
-            <div className="spinner" />
+          <div className="results-layout">
+            <div className="results-layout__primary">
+              <WeatherCard loading />
+            </div>
+            <aside className="results-layout__sidebar">
+              <StandardCard loading />
+              <StandardCard loading />
+            </aside>
           </div>
         )}
 
@@ -81,23 +86,31 @@ export default function Home() {
           <div className="error-box mb-2">{error}</div>
         )}
 
-        {/* Results */}
+        {/* Results — asymmetric 2-column layout */}
         {weather && !loading && (
-          <>
-            <WeatherCard data={weather} />
-            {forecast && <ForecastCard data={forecast} />}
-            {airQuality && <AirQualityBadge data={airQuality} />}
-            <SaveWeatherForm locationQuery={query} />
-            {mapData && <MapEmbed data={mapData} />}
-            {videos && <YouTubeVideos data={videos} />}
-          </>
+          <div className="results-layout">
+            {/* Primary column — featured weather + forecast */}
+            <div className="results-layout__primary">
+              <WeatherCard data={weather} />
+              <ForecastCard data={forecast} />
+            </div>
+
+            {/* Sidebar — smaller cards grouped */}
+            <aside className="results-layout__sidebar">
+              <AirQualityBadge data={airQuality} />
+              <SaveWeatherForm locationQuery={query} />
+              {mapData && <MapEmbed data={mapData} />}
+            </aside>
+          </div>
         )}
+
+        {/* Videos — full width below */}
+        {videos && !loading && <YouTubeVideos data={videos} />}
 
         {/* Empty state */}
         {!weather && !loading && !error && (
           <div className="empty-state">
-            <p style={{ fontSize: "3rem", marginBottom: "0.5rem" }}>🌤</p>
-            <p>Search for a location above to see current weather, forecast, map, and more.</p>
+            <p className="empty-state__text">Search for a location to see weather data.</p>
           </div>
         )}
       </div>

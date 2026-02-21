@@ -2,9 +2,31 @@ import { useState, useEffect, useCallback } from "react";
 import { Trash2, Edit2, X, Check, RefreshCw, MapPin, CalendarDays } from "lucide-react";
 import { listRecords, deleteRecord, updateRecord } from "../services/api";
 import ExportButtons from "../components/ExportButtons";
+import StandardCard from "../components/StandardCard";
+import CompactCard from "../components/CompactCard";
 import toast from "react-hot-toast";
 
 const OWM_ICON = (icon) => `https://openweathermap.org/img/wn/${icon}@2x.png`;
+
+function relativeTime(dateStr) {
+  if (!dateStr) return "";
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
+}
+
+function getRecordStatus(rec) {
+  if (!rec.created_at) return undefined;
+  const age = Date.now() - new Date(rec.created_at).getTime();
+  const dayMs = 86400000;
+  if (age < dayMs) return "active";
+  if (age < dayMs * 7) return "stale";
+  return undefined;
+}
 
 export default function History() {
   const [records, setRecords] = useState([]);
@@ -81,16 +103,21 @@ export default function History() {
     }
   };
 
+  // Group records: most recent first, then split featured vs rest
+  const sorted = [...records].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  const featured = sorted[0] || null;
+  const rest = sorted.slice(1);
+
   return (
     <main className="page">
       <div className="container">
         {/* Header */}
-        <div className="flex items-center justify-between mb-3" style={{ flexWrap: "wrap", gap: "0.75rem" }}>
+        <div className="history-header mb-3">
           <div>
-            <h1>Weather History</h1>
-            <p className="text-muted">All saved weather records — read, update, or delete.</p>
+            <h1>History</h1>
+            <p className="text-muted">Saved weather records. {records.length} total.</p>
           </div>
-          <div className="flex gap-1 items-center" style={{ flexWrap: "wrap" }}>
+          <div className="history-header__actions">
             <button className="btn btn-secondary btn-sm" onClick={load} disabled={loading}>
               <RefreshCw size={14} />
               Refresh
@@ -99,114 +126,154 @@ export default function History() {
           </div>
         </div>
 
-        {loading && <div className="loading-center"><div className="spinner" /></div>}
-
-        {!loading && records.length === 0 && (
-          <div className="empty-state">
-            <p style={{ fontSize: "3rem", marginBottom: "0.5rem" }}>📂</p>
-            <p>No records yet. Search for a location on the Weather page and save it.</p>
+        {/* Loading */}
+        {loading && (
+          <div className="history-grid">
+            <StandardCard loading className="history-grid__featured" />
+            <StandardCard loading />
+            <StandardCard loading />
           </div>
         )}
 
-        {!loading && records.map((rec) => (
-          <RecordRow
-            key={rec.id}
-            rec={rec}
-            isEditing={editId === rec.id}
-            editForm={editForm}
-            setEditForm={setEditForm}
-            onEdit={() => startEdit(rec)}
-            onCancel={cancelEdit}
-            onSave={() => handleSave(rec.id)}
-            onDelete={() => handleDelete(rec.id)}
-            saving={saving}
-            deleting={deleting === rec.id}
-          />
-        ))}
+        {/* Empty */}
+        {!loading && records.length === 0 && (
+          <StandardCard empty emptyText="No records yet. Search for a location and save it." />
+        )}
+
+        {/* Records — featured + list, not uniform */}
+        {!loading && featured && (
+          <div className="history-grid">
+            {/* Featured record — larger */}
+            <div className="history-grid__featured">
+              <RecordRow
+                rec={featured}
+                isFeatured
+                isEditing={editId === featured.id}
+                editForm={editForm}
+                setEditForm={setEditForm}
+                onEdit={() => startEdit(featured)}
+                onCancel={cancelEdit}
+                onSave={() => handleSave(featured.id)}
+                onDelete={() => handleDelete(featured.id)}
+                saving={saving}
+                deleting={deleting === featured.id}
+              />
+            </div>
+
+            {/* Rest — compact list */}
+            {rest.length > 0 && (
+              <div className="history-grid__list">
+                <h3 className="history-grid__list-heading">Older Records</h3>
+                {rest.map((rec) => (
+                  <RecordRow
+                    key={rec.id}
+                    rec={rec}
+                    isEditing={editId === rec.id}
+                    editForm={editForm}
+                    setEditForm={setEditForm}
+                    onEdit={() => startEdit(rec)}
+                    onCancel={cancelEdit}
+                    onSave={() => handleSave(rec.id)}
+                    onDelete={() => handleDelete(rec.id)}
+                    saving={saving}
+                    deleting={deleting === rec.id}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </main>
   );
 }
 
-function RecordRow({ rec, isEditing, editForm, setEditForm, onEdit, onCancel, onSave, onDelete, saving, deleting }) {
-  return (
-    <div className="card mb-2" style={{ position: "relative" }}>
-      {/* Top bar */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.5rem" }}>
-        <div>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
-            {rec.weather_icon && (
-              <img src={OWM_ICON(rec.weather_icon)} alt="" style={{ width: 40, height: 40 }} />
-            )}
-            <div>
-              <p style={{ fontWeight: 700, fontSize: "1rem" }}>
-                <MapPin size={14} style={{ verticalAlign: "middle", marginRight: 4, color: "var(--primary)" }} />
-                {rec.location?.city || rec.location?.display_name?.split(",")[0]}
-                {rec.location?.country && `, ${rec.location.country}`}
-              </p>
-              <p className="text-muted text-sm">
-                <CalendarDays size={12} style={{ verticalAlign: "middle", marginRight: 4 }} />
-                {rec.date_from} → {rec.date_to}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div style={{ display: "flex", gap: "0.4rem" }}>
-          {!isEditing ? (
-            <>
-              <button className="btn btn-secondary btn-sm btn-icon" onClick={onEdit} title="Edit">
-                <Edit2 size={14} />
-              </button>
-              <button className="btn btn-danger btn-sm btn-icon" onClick={onDelete} disabled={deleting} title="Delete">
-                <Trash2 size={14} />
-              </button>
-            </>
-          ) : (
-            <>
-              <button className="btn btn-success btn-sm" onClick={onSave} disabled={saving}>
-                <Check size={14} />
-                {saving ? "Saving…" : "Save"}
-              </button>
-              <button className="btn btn-secondary btn-sm" onClick={onCancel}>
-                <X size={14} />
-              </button>
-            </>
-          )}
-        </div>
-      </div>
+function RecordRow({ rec, isFeatured, isEditing, editForm, setEditForm, onEdit, onCancel, onSave, onDelete, saving, deleting }) {
+  const status = getRecordStatus(rec);
+  const updated = relativeTime(rec.created_at);
 
-      {/* Stats row */}
+  const headerRight = (
+    <div className="record-actions">
       {!isEditing ? (
-        <div style={{ marginTop: "0.75rem", display: "flex", gap: "1.5rem", flexWrap: "wrap", fontSize: "0.875rem" }}>
-          {rec.temperature_avg != null && <StatPill label="Avg Temp" value={`${rec.temperature_avg}°C`} />}
-          {rec.temperature_min != null && <StatPill label="Min" value={`${rec.temperature_min}°C`} />}
-          {rec.temperature_max != null && <StatPill label="Max" value={`${rec.temperature_max}°C`} />}
-          {rec.humidity != null && <StatPill label="Humidity" value={`${rec.humidity}%`} />}
-          {rec.wind_speed != null && <StatPill label="Wind" value={`${rec.wind_speed} m/s`} />}
-          {rec.description && <StatPill label="Conditions" value={rec.description} />}
-        </div>
+        <>
+          <button className="btn btn-secondary btn-sm btn-icon" onClick={onEdit} title="Edit">
+            <Edit2 size={14} />
+          </button>
+          <button className="btn btn-danger btn-sm btn-icon" onClick={onDelete} disabled={deleting} title="Delete">
+            <Trash2 size={14} />
+          </button>
+        </>
+      ) : (
+        <>
+          <button className="btn btn-success btn-sm" onClick={onSave} disabled={saving}>
+            <Check size={14} />
+            {saving ? "Saving…" : "Save"}
+          </button>
+          <button className="btn btn-secondary btn-sm" onClick={onCancel}>
+            <X size={14} />
+          </button>
+        </>
+      )}
+    </div>
+  );
+
+  const cityName = rec.location?.city || rec.location?.display_name?.split(",")[0] || "Unknown";
+
+  return (
+    <StandardCard
+      title={
+        <span className="record-title">
+          <MapPin size={14} className="record-title__pin" />
+          {cityName}
+          {rec.location?.country && <span className="record-title__country">, {rec.location.country}</span>}
+        </span>
+      }
+      status={status}
+      updatedAt={updated}
+      headerRight={headerRight}
+      className={`mb-2 ${isFeatured ? "record--featured" : ""}`}
+    >
+      {!isEditing ? (
+        <>
+          <p className="record-dates">
+            <CalendarDays size={12} />
+            {rec.date_from} → {rec.date_to}
+          </p>
+
+          {/* Stats — compact list, not pills */}
+          <div className="record-stats">
+            {rec.temperature_avg != null && (
+              <CompactCard label="Avg" value={`${rec.temperature_avg}°C`} />
+            )}
+            {rec.temperature_min != null && (
+              <CompactCard label="Min" value={`${rec.temperature_min}°C`} />
+            )}
+            {rec.temperature_max != null && (
+              <CompactCard label="Max" value={`${rec.temperature_max}°C`} />
+            )}
+            {rec.humidity != null && (
+              <CompactCard label="Humidity" value={`${rec.humidity}%`} />
+            )}
+            {rec.wind_speed != null && (
+              <CompactCard label="Wind" value={`${rec.wind_speed} m/s`} />
+            )}
+            {rec.description && (
+              <CompactCard label="Conditions" value={rec.description} />
+            )}
+          </div>
+
+          {rec.notes && (
+            <p className="record-notes">{rec.notes}</p>
+          )}
+
+          <p className="record-meta">#{rec.id} · {new Date(rec.created_at).toLocaleString()}</p>
+        </>
       ) : (
         <EditForm editForm={editForm} setEditForm={setEditForm} />
       )}
-
-      {rec.notes && !isEditing && (
-        <p style={{ marginTop: "0.6rem", fontSize: "0.85rem", color: "var(--text-muted)", fontStyle: "italic" }}>
-          📝 {rec.notes}
-        </p>
-      )}
-
-      <p style={{ marginTop: "0.5rem", fontSize: "0.75rem", color: "var(--text-muted)" }}>
-        Record #{rec.id} · Saved {new Date(rec.created_at).toLocaleString()}
-      </p>
-    </div>
+    </StandardCard>
   );
 }
-
-function StatPill({ label, value }) {
-  return (
-    <div>
-      <span style={{ color: "var(--text-muted)", fontSize: "0.75rem" }}>{label}: </span>
-      <strong>{value}</strong>
     </div>
   );
 }
