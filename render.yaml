@@ -25,7 +25,7 @@ services:
       - key: YOUTUBE_API_KEY
         sync: false
       - key: CORS_ORIGINS
-        value: https://weather-dashboard-xxxx.onrender.com   # update after first deploy
+        value: https://weather-dashboard-xw71.onrender.com
       - key: PYTHON_VERSION
         value: "3.11.12"
 
