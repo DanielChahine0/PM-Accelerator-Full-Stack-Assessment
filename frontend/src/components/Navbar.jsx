@@ -73,7 +73,7 @@ export default function Navbar() {
 const styles = {
   nav: {
     background: "#fff",
-    boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+    borderBottom: "1px solid var(--border)",
     position: "sticky",
     top: 0,
     zIndex: 100,

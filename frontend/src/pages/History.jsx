@@ -274,9 +274,6 @@ function RecordRow({ rec, isFeatured, isEditing, editForm, setEditForm, onEdit, 
     </StandardCard>
   );
 }
-    </div>
-  );
-}
 
 function EditForm({ editForm, setEditForm }) {
   const f = (k, v) => setEditForm((prev) => ({ ...prev, [k]: v }));

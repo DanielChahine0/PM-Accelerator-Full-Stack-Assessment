@@ -1,11 +1,11 @@
 import { ExternalLink } from "lucide-react";
+import StandardCard from "../components/StandardCard";
 
 export default function About() {
   return (
     <main className="page">
       <div className="container" style={{ maxWidth: 800 }}>
-        <div className="card">
-          <h1 style={{ marginBottom: "0.5rem" }}>About This App</h1>
+        <StandardCard title="About This App">
           <p className="text-muted mb-3">Built by Daniel Chahine for the PM Accelerator AI Engineer Intern Technical Assessment</p>
 
           <hr className="divider" />
@@ -93,7 +93,7 @@ export default function About() {
               <li>Graceful error handling with user-friendly messages</li>
             </ul>
           </section>
-        </div>
+        </StandardCard>
       </div>
     </main>
   );
