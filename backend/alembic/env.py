@@ -17,7 +17,8 @@ from app.models import WeatherRecord, SavedLocation  # noqa: F401
 config = context.config
 
 # Override sqlalchemy.url with value from settings/.env
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+# Use database_url_fixed to handle Render's postgres:// prefix
+config.set_main_option("sqlalchemy.url", settings.database_url_fixed)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
