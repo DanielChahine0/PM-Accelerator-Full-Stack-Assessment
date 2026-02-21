@@ -1,0 +1,177 @@
+/* ── Reset / Base ──────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: #f2f2f2;
+  color: #1a1a1a;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── App shell ─────────────────────────────────────────── */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Header ────────────────────────────────────────────── */
+.app-header {
+  background: #fff;
+  border-bottom: 1px solid #d8d8d8;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.app-header__inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 2px;
+  color: #111;
+}
+
+.app-subtitle {
+  font-size: 0.72rem;
+  color: #888;
+  margin: 0;
+}
+
+/* ── Controls ───────────────────────────────────────────── */
+.app-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.ctrl-btn {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.ctrl-btn:hover {
+  background: #f5f5f5;
+  border-color: #bbb;
+}
+
+.ctrl-btn--active {
+  background: #111;
+  color: #fff;
+  border-color: #111;
+}
+
+/* ── Main ───────────────────────────────────────────────── */
+.app-main {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 24px 48px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* ── Section labels ─────────────────────────────────────── */
+.section-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: #999;
+  font-weight: 700;
+  margin: 0 0 12px;
+}
+
+/* ── Hero layout: featured (wide) + 2×2 grid ────────────── */
+.hero-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 16px;
+  align-items: start;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* ── Compact layout: uneven columns ─────────────────────── */
+.compact-layout {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.compact-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── States showcase ────────────────────────────────────── */
+.states-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.2fr 1.2fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.states-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.state-title {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #bbb;
+  font-weight: 600;
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .hero-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .states-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero-grid,
+  .compact-layout,
+  .states-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .app-header__inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
