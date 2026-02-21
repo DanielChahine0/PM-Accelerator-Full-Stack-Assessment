@@ -16,3 +16,7 @@ dicttoxml==1.7.4
 
 # CORS
 starlette==0.41.3
+
+# Testing
+pytest==8.3.4
+pytest-mock==3.14.0
