@@ -27,7 +27,7 @@ services:
       - key: CORS_ORIGINS
         value: https://weather-dashboard-xxxx.onrender.com   # update after first deploy
       - key: PYTHON_VERSION
-        value: "3.11"
+        value: "3.11.12"
 
   # ── Frontend (React / Vite static site) ────────────────────────────
   - type: web
