@@ -46,4 +46,4 @@ services:
         destination: /index.html    # SPA client-side routing support
     envVars:
       - key: VITE_API_BASE_URL
-        value: https://weather-api-xxxx.onrender.com   # update after first deploy
+        value: https://weather-api-1ee2.onrender.com
