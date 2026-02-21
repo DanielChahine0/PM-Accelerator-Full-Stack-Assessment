@@ -21,7 +21,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop links */}
-        <div style={styles.links}>
+        <div className="nav-links" style={styles.links}>
           {links.map((l) => (
             <Link
               key={l.to}
@@ -38,6 +38,7 @@ export default function Navbar() {
 
         {/* Mobile hamburger */}
         <button
+          className="nav-hamburger"
           style={styles.hamburger}
           onClick={() => setOpen((o) => !o)}
           aria-label="Toggle menu"
@@ -115,7 +116,6 @@ const styles = {
     cursor: "pointer",
     padding: "0.4rem",
     color: "var(--text)",
-    "@media(max-width:600px)": { display: "flex" },
   },
   mobileMenu: {
     display: "flex",

@@ -1,8 +1,12 @@
+from pathlib import Path
+
 from fastapi import FastAPI
-from fastapi.responses import Response
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.routers import weather, integrations, export
+
+STATIC_DIR = Path(__file__).resolve().parent / "static"
 
 app = FastAPI(
     title="Weather App API",
@@ -45,7 +49,10 @@ def root():
 
 @app.get("/favicon.ico", include_in_schema=False)
 def favicon():
-    return Response(status_code=204)
+    favicon_path = STATIC_DIR / "favicon.ico"
+    if favicon_path.exists():
+        return FileResponse(favicon_path, media_type="image/x-icon")
+    return FileResponse(status_code=204)
 
 
 @app.get("/health", tags=["root"])

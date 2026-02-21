@@ -122,6 +122,8 @@ textarea { resize: vertical; min-height: 80px; }
 @media (max-width: 600px) {
   .grid-5, .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
   .card { padding: 1rem; }
+  .nav-hamburger { display: flex !important; }
+  .nav-links { display: none !important; }
 }
 
 .flex { display: flex; }
