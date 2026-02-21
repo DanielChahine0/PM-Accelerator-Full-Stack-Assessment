@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
-import { Cloud, Database, Menu, X } from "lucide-react";
+import { Database, Menu, X } from "lucide-react";
 import { useState } from "react";
+import favicon from "../assets/favicon.ico";
 
 export default function Navbar() {
   const { pathname } = useLocation();
@@ -16,7 +17,7 @@ export default function Navbar() {
     <nav style={styles.nav}>
       <div className="container" style={styles.inner}>
         <Link to="/" style={styles.brand}>
-          <Cloud size={22} />
+          <img src={favicon} alt="Logo" height={22} width={22} />
           <span>WeatherApp</span>
         </Link>
 

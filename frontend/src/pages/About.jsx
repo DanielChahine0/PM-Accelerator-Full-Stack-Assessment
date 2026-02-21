@@ -23,7 +23,7 @@ export default function About() {
               cultivates the skills needed to excel as a product manager in today's fast-moving tech landscape.
             </p>
             <a
-              href="https://www.linkedin.com/company/product-manager-accelerator/"
+              href="https://www.linkedin.com/school/pmaccelerator/"
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-primary"
