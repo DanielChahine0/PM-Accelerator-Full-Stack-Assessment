@@ -68,4 +68,3 @@ export default function WeatherCard({ data, loading = false }) {
     </FeaturedCard>
   );
 }
-};

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Save, ChevronDown, ChevronUp } from "lucide-react";
 import { createRecord } from "../services/api";
+import StandardCard from "./StandardCard";
 import toast from "react-hot-toast";
 
 export default function SaveWeatherForm({ locationQuery, onSaved }) {
@@ -47,7 +48,7 @@ export default function SaveWeatherForm({ locationQuery, onSaved }) {
   };
 
   return (
-    <div className="card mt-2" style={{ padding: "1rem 1.5rem" }}>
+    <StandardCard title="Save to History" className="mt-2">
       <button
         className="btn btn-secondary w-full"
         onClick={() => setOpen((o) => !o)}
@@ -55,7 +56,7 @@ export default function SaveWeatherForm({ locationQuery, onSaved }) {
       >
         <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
           <Save size={16} />
-          Save to History
+          {open ? "Close" : "Save this weather"}
         </span>
         {open ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
       </button>
@@ -96,6 +97,6 @@ export default function SaveWeatherForm({ locationQuery, onSaved }) {
           </button>
         </form>
       )}
-    </div>
+    </StandardCard>
   );
 }
