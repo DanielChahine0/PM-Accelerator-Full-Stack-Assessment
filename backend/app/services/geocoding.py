@@ -3,15 +3,47 @@ Geocoding service using Nominatim (OpenStreetMap) - free, no API key required.
 Resolves city names, zip codes, landmarks, GPS coordinates, etc.
 """
 import requests
+import time
+import logging
 from typing import Optional
 from app.schemas.weather import GeocodingResult
 import os
 
+logger = logging.getLogger(__name__)
+
 NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
 NOMINATIM_REVERSE_URL = "https://nominatim.openstreetmap.org/reverse"
-DEFAULT_USER_AGENT = "WeatherApp/1.0 (contact: nominatim-contact@example.com)"
+DEFAULT_USER_AGENT = "PMAcceleratorWeatherDashboard/1.0"
 USER_AGENT = os.getenv("NOMINATIM_USER_AGENT", DEFAULT_USER_AGENT)
-HEADERS = {"User-Agent": USER_AGENT}
+HEADERS = {
+    "User-Agent": USER_AGENT,
+    "Accept-Language": "en",
+}
+
+# Simple rate limiter: track last request time
+_last_request_time = 0.0
+
+
+def _rate_limited_get(url: str, params: dict, retries: int = 2) -> requests.Response:
+    """Make a GET request to Nominatim with rate limiting (max 1 req/sec) and retries."""
+    global _last_request_time
+    for attempt in range(retries + 1):
+        # Respect Nominatim's 1 request/second policy
+        elapsed = time.time() - _last_request_time
+        if elapsed < 1.0:
+            time.sleep(1.0 - elapsed)
+        _last_request_time = time.time()
+
+        resp = requests.get(url, params=params, headers=HEADERS, timeout=10)
+        if resp.status_code == 403:
+            logger.warning(f"Nominatim 403 on attempt {attempt + 1}, retrying...")
+            time.sleep(2 * (attempt + 1))
+            continue
+        resp.raise_for_status()
+        return resp
+    # Final attempt failed
+    resp.raise_for_status()
+    return resp  # unreachable but satisfies type checker
 
 
 def geocode_location(query: str) -> GeocodingResult:
@@ -32,8 +64,7 @@ def geocode_location(query: str) -> GeocodingResult:
         "limit": 1,
         "addressdetails": 1,
     }
-    resp = requests.get(NOMINATIM_URL, params=params, headers=HEADERS, timeout=10)
-    resp.raise_for_status()
+    resp = _rate_limited_get(NOMINATIM_URL, params)
     results = resp.json()
 
     if not results:
@@ -59,8 +90,7 @@ def geocode_location(query: str) -> GeocodingResult:
 
 def _reverse_geocode(lat: float, lon: float) -> GeocodingResult:
     params = {"lat": lat, "lon": lon, "format": "json", "addressdetails": 1}
-    resp = requests.get(NOMINATIM_REVERSE_URL, params=params, headers=HEADERS, timeout=10)
-    resp.raise_for_status()
+    resp = _rate_limited_get(NOMINATIM_REVERSE_URL, params)
     r = resp.json()
     if "error" in r:
         raise ValueError(f"No location found for coordinates ({lat}, {lon})")
